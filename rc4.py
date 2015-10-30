@@ -21,10 +21,12 @@
 #       MA 02110-1301, USA.
 #
 
-import random, base64
+import random
+import base64
 from hashlib import sha1
 
 __all__ = ['crypt', 'encrypt', 'decrypt']
+
 
 def crypt(data, key):
     """RC4 algorithm"""
@@ -43,6 +45,7 @@ def crypt(data, key):
 
     return ''.join(out)
 
+
 def encrypt(data, key, encode=base64.b64encode, salt_length=16):
     """RC4 encryption with random salt and final encoding"""
     salt = ''
@@ -52,6 +55,7 @@ def encrypt(data, key, encode=base64.b64encode, salt_length=16):
     if encode:
         data = encode(data)
     return data
+
 
 def decrypt(data, key, decode=base64.b64decode, salt_length=16):
     """RC4 decryption of encoded data"""
