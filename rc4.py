@@ -21,15 +21,9 @@
 #       MA 02110-1301, USA.
 #
 
-import random
-import base64
-from hashlib import sha1
-
 __all__ = ['crypt', 'encrypt', 'decrypt']
 
-
 def crypt(data, key):
-    """RC4 algorithm"""
     x = 0
     box = range(256)
     for i in range(256):
@@ -45,27 +39,32 @@ def crypt(data, key):
 
     return ''.join(out)
 
-
-def encrypt(data, key, encode=base64.b64encode, salt_length=16):
-    """RC4 encryption with random salt and final encoding"""
-    salt = ''
-    for n in range(salt_length):
-        salt += chr(random.randrange(256))
-    data = salt + crypt(data, sha1(key + salt).digest())
-    if encode:
-        data = encode(data)
+def encrypt(data, key):
+    data = crypt(data, key)
     return data
 
-
-def decrypt(data, key, decode=base64.b64decode, salt_length=16):
-    """RC4 decryption of encoded data"""
-    if decode:
-        data = decode(data)
-    salt = data[:salt_length]
-    return crypt(data[salt_length:], sha1(key + salt).digest())
+def decrypt(data, key):
+    return crypt(data, key)
 
 if __name__ == '__main__':
-    for i in range(10):
-        data = encrypt('secret message', 'my-key')
-        print data
-        print decrypt(data, 'my-key')
+
+    # test vectors verified using http://rc4.online-domain-tools.com/
+
+    # ciphertext should be BBF316E8D940AF0AD3
+    #key = 'Key'
+    #plaintext = 'Plaintext'
+
+    # ciphertext should be 1021BF0420
+    #key = 'Wiki'
+    #plaintext = 'pedia'
+
+    # ciphertext should be 45A01F645FC35B383552544B9BF5
+    key = 'Secret'
+    plaintext = 'Attack at dawn'
+
+    print 'Encrypting: \'' + plaintext + '\' with key \'' + key + '\''
+    data = encrypt(plaintext, key)
+
+    print 'Ciphertext: 0x' + ''.join(x.encode('hex') for x in data)
+    print 'Decrypting: returned \'' + decrypt(data, key) + '\' using key \'' + key + '\''
+
