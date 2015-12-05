@@ -11,6 +11,7 @@ import itertools
 import time
 import rc4
 import string
+import os
 
 
 def parse_args():
@@ -59,11 +60,74 @@ def brute_force(ciphertext, plaintext):
                                                            possibilities_tried)
 
 
+def weakKeyDistribution():
+    keys = generateKeys()
+
+    B = 0
+    IV = {B + 3, 0xf, 0x7}
+    SK = {1, 2, 3, 4, 5}
+    K = IV + SK
+    l = len(K)
+
+
+def getDistribution(keys):
+    dist = [0] * 256
+    count = 0
+
+    for key in keys:
+        # create random plain text and apply one of the keys to it
+        data = os.urandom(47)
+        data.encode('base-64')
+        keyString = str(key)
+        ciphertext = rc4.crypt(data, keyString)
+
+        # print key[0]
+        # print key[1]
+        # print key[2]
+        # print ord(ciphertext[0])
+
+        dist[ord(ciphertext[0]) - key[2]] += 1
+        count += 1
+
+    showProbabilities(dist, count)
+
+
+def showProbabilities(dist, count):
+    print count
+    for i in range(256):
+        print "Probability that K[2] + %i = B[0] is %.8f%%" % (i, ((dist[i] / (count + 0.0))*100))
+
+
+def generateKeys():
+    print "Generating Keys"
+
+    keys = []
+
+    for k in range(7, 15):
+
+        key = bytearray(k)
+
+        for i in range(256):
+
+            key[0] = i
+            key[1] = (256 - i) % 256
+
+            for j in range(2, k):
+                key[j] = os.urandom(1)
+
+            keys.append(key)
+            #print ''.join('{:02x}'.format(x) for x in key)
+
+    return keys
+
+
 def main():
     # args = parse_args()
 
     # with open(args.file_name) as input_file:
     #     ciphertext = input_file.read()
+
+    getDistribution(generateKeys())
 
     # key = 'Secret'
     # plaintext = 'Attack at dawn'
@@ -80,7 +144,8 @@ def main():
 
     alphabet = string.letters  # the legal key characters
     gen_keys(alphabet, 4)  # generate all possible keys, write to file
-    brute_force(data, plaintext)  # really slow for key length > 4
+    # brute_force(data, plaintext)  # really slow for key length > 4
+
 
 # ===========================================================================run
 if __name__ == '__main__':
