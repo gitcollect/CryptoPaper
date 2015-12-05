@@ -73,18 +73,29 @@ def weakKeyDistribution():
 def getDistribution(keys):
     dist = [0] * 256
     count = 0
+    #key = keys[1]
 
+    #print str(key)
     for key in keys:
-        # create random plain text and apply one of the keys to it
-        data = os.urandom(47)
-        data.encode('base-64')
-        keyString = str(key)
-        ciphertext = rc4.crypt(data, keyString)
+    #for i in range(50):
 
-        # print key[0]
-        # print key[1]
-        # print key[2]
-        # print ord(ciphertext[0])
+        print ''.join('{:02x}'.format(x) for x in key)
+
+        # create random plain text and apply one of the keys to it
+        data = os.urandom(48);
+        data.encode('base-64')
+        keyString = "".join(map(chr, key))
+
+        #print keyString
+
+        ciphertext = rc4.crypt("This is my sample fixed message", keyString)
+
+        #print map(ord, ciphertext)
+
+        #print key[0]
+        #print key[1]
+        #print key[2]
+        #print ord(ciphertext[0])
 
         dist[ord(ciphertext[0]) - key[2]] += 1
         count += 1
@@ -93,33 +104,42 @@ def getDistribution(keys):
 
 
 def showProbabilities(dist, count):
-    print count
+    #print count
     for i in range(256):
-        print "Probability that K[2] + %i = B[0] is %.8f%%" % (i, ((dist[i] / (count + 0.0))*100))
+        print "Probability that B[0] - %i = K[2] is %.9f%%" % (i, ((dist[i] / (count + 0.0))*100))
 
 
 def generateKeys():
     print "Generating Keys"
 
     keys = []
+    k0 = 0;
+    k1 = 0
 
-    for k in range(7, 15):
+    # for a range of key lengths
+    for k in range(16, 17):
 
-        key = bytearray(k)
-
+        # make one variation of the roo form for each key length
         for i in range(256):
 
-            key[0] = i
-            key[1] = (256 - i) % 256
+            k0 = i
+            k1 = (256 - i) % 256
+
+            # and fill the remaining part of the key
+            #for h in range(2, 500):
+
+            key = bytearray(k)
+            key[0] = k0
+            key[1] = k1
 
             for j in range(2, k):
+
+                #key[j] = 0
                 key[j] = os.urandom(1)
 
             keys.append(key)
-            #print ''.join('{:02x}'.format(x) for x in key)
 
     return keys
-
 
 def main():
     # args = parse_args()
