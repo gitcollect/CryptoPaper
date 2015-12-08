@@ -41,7 +41,7 @@ def crypt(data, key):
         # the following lines were modified to extract the first byte generated
         out_char = box[(box[x] + box[y]) % 256]
         if z == 1:
-            first_byte = hex(out_char)  # [2:].zfill(2)
+            first_byte = hex(out_char)
             z = 0
         out.append(chr(ord(char) ^ out_char))  # box[(box[x] + box[y]) % 256]))
 
