@@ -72,7 +72,7 @@ def show_probabilities(weak_dist, rand_dist):
 
     print "From a sample of %i keys the distribution is..." % weak_count
     print ""
-    print " Prob. that K[2] = B[0] - x    Weak Keys     Random Keys "
+    print "      K[2] = B[0] - x          Weak Keys     Random Keys "
     print "=============================================================="
 
     for i in range(256):
