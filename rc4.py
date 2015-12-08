@@ -55,25 +55,3 @@ def encrypt(data, key):
 
 def decrypt(data, key):
     return crypt(data, key)
-
-if __name__ == '__main__':
-    # test vectors verified using http://rc4.online-domain-tools.com/
-
-    # ciphertext should be BBF316E8D940AF0AD3
-    # key = 'Key'
-    # plaintext = 'Plaintext'
-
-    # ciphertext should be 1021BF0420
-    # key = 'Wiki'
-    # plaintext = 'pedia'
-
-    # ciphertext should be 45A01F645FC35B383552544B9BF5
-    key = 'Secret'
-    plaintext = 'Attack at dawn'
-
-    print 'Encrypting: "' + plaintext + '" with key "' + key + '"'
-    data = encrypt(plaintext, key)
-
-    print 'Ciphertext: 0x' + ''.join(x.encode('hex') for x in data)
-    print 'Decrypting: returned "' + decrypt(data,
-                                             key) + '" using key "' + key + '"'
