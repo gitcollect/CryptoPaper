@@ -25,6 +25,7 @@ __all__ = ['crypt', 'encrypt', 'decrypt']
 
 
 def crypt(data, key):
+    z = 1
     x = 0
     box = range(256)
     for i in range(256):
@@ -36,9 +37,15 @@ def crypt(data, key):
         x = (x + 1) % 256
         y = (y + box[x]) % 256
         box[x], box[y] = box[y], box[x]
-        out.append(chr(ord(char) ^ box[(box[x] + box[y]) % 256]))
 
-    return ''.join(out)
+        # the following lines were modified to extract the first byte generated
+        out_char = box[(box[x] + box[y]) % 256]
+        if z == 1:
+            first_byte = hex(out_char)  # [2:].zfill(2)
+            z = 0
+        out.append(chr(ord(char) ^ out_char))  # box[(box[x] + box[y]) % 256]))
+
+    return ''.join(out), first_byte
 
 
 def encrypt(data, key):
