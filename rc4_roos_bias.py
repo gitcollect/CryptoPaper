@@ -1,14 +1,15 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 #
 #     COURSE:  COMP 4140
 # INSTRUCTOR:  Michael Zapp
 # ASSIGNMENT:  Research Paper, RC4 Cryptanalysis
 # STUDENT(S):  Matt Deutscher, Josh Westlake
 #
-#      USAGE:  python rc4_roos_bias.py
+#      USAGE:  python rc4_roos_bias.py key_count [-v]
 
 import rc4
 import os
+import argparse
 
 
 class KeyCategory:
@@ -23,10 +24,10 @@ def sum_all_values(d):
     return total
 
 
-# Creates a dictionary containing counts of how far apart the 3rd byte of each key is from the first byte of ciphertext
-# created using the key. If show_output is true will output verbose logs showing each comparison and result
+# Creates a dictionary containing counts of how far apart the 3rd byte of each
+# key is from the first byte of ciphertext created using the key. If show_output
+# is true will output verbose logs showing each comparison and result.
 def get_distribution(keys, show_output):
-
     dist = [0] * 256
     count = 0
     positives = 0
@@ -60,7 +61,9 @@ def get_distribution(keys, show_output):
 
     prob = float(positives) / float(count)
     if show_output:
-        print 'Total of {0} positives out of {1} keys, probability = {2}'.format(positives, count, prob)
+        print 'Total of {0} positives out of {1} keys, probability = {' \
+              '2}\n----------------------------------------------------------' \
+              ''.format(positives, count, prob)
 
     return dist
 
@@ -114,16 +117,23 @@ def generate_keys(key_type, count):
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Verify the Roos biases.')
+    parser.add_argument('key_count', help='number of keys to generate',
+                        type=int)
+    parser.add_argument('-v', '--verbose', help='use to run in verbose mode',
+                        action='store_true')
+    args = parser.parse_args()
 
-    key_count = 10000
+    print "Generating %i weak keys and encrypting... " % args.key_count
+    weak_key_distribution = get_distribution(
+        generate_keys(KeyCategory.WEAK, args.key_count), args.verbose)
+    print "Generating %i random keys and encrypting... " % args.key_count
+    rand_key_distribution = get_distribution(
+        generate_keys(KeyCategory.RANDOM, args.key_count), args.verbose)
 
-    print "Generating %i weak keys and encrypting... " % key_count
-    weak_key_distribution = get_distribution(generate_keys(KeyCategory.WEAK, key_count), False)
-    print "Generating %i random keys and encrypting... " % key_count
-    rand_key_distribution = get_distribution(generate_keys(KeyCategory.RANDOM, key_count), False)
-
-    print "Recording distribution of differences between K[2] & B[0]..."
-    show_probabilities(weak_key_distribution, rand_key_distribution)
+    if not args.verbose:
+        print "Recording distribution of differences between K[2] & B[0]..."
+        show_probabilities(weak_key_distribution, rand_key_distribution)
 
 
 if __name__ == '__main__':
