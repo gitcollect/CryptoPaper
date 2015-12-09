@@ -62,8 +62,8 @@ def get_distribution(keys, show_output):
     prob = float(positives) / float(count)
     if show_output:
         print 'Total of {0} positives out of {1} keys, probability = {' \
-              '2}\n----------------------------------------------------------' \
-              ''.format(positives, count, prob)
+              '2}\n----------------------------------------------------------\n'.format(
+            positives, count, prob)
 
     return dist
 
